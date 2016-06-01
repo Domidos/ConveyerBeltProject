@@ -1,0 +1,28 @@
+
+How to handle the master:
+
+Tha main function has to be called with three parameters:
+
+1. whoAmI: 0 means I am the master ("91.0.0.91")
+           anything else means I am a slave (was only needed to test functionality)
+
+2. debug: 0 NO debug information output to console
+          1 debug information output to console
+
+3. inits: 0 slaves will not (be) initialize(d)
+          1 slaves will (be) intialize(d)
+
+4. start: 0 do not start the chain (by sending "Anfrage" to the first slave)
+          1 start the chain
+
+5. ptpOn: 0 do not start ptp Server
+          1 start ptp Server
+
+The parameters can be entered when running the main task as "Arguments" with blanks between them e.g.
+ 0 1 0 0 0
+
+In main.c there is an Array called slaves. 
+Here you need to enter the IP adresses of all slaves which have to be initalized.
+The order in the arry is the same in the chain. 
+For each slave the neighbor is the next field of the array, for the last one (not zero) it is the first.
+
