@@ -80,6 +80,14 @@ void myAction14(){
 	return;
 }
 
+void myAction15(){
+	mySystemManager->action15();
+}
+
+void myAction16(){
+	mySystemManager->action16();
+}
+
 void myAction20(){
 	mySystemManager->action20();
 	return;
@@ -139,7 +147,7 @@ bool myCondition11(){
 }
 
 bool myCondition12(){
-	return mySystemManager->condition12();
+	return mySystemManager->conditionTrue();
 }
 
 bool myCondition13(){
@@ -147,6 +155,14 @@ bool myCondition13(){
 }
 
 bool myCondition14(){
+	return mySystemManager->conditionTrue();
+}
+
+bool myCondition15(){
+	return mySystemManager->condition15();
+}
+
+bool myCondition16(){
 	return mySystemManager->conditionTrue();
 }
 

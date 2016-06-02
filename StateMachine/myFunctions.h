@@ -12,6 +12,8 @@ void myAction11();
 void myAction12();
 void myAction13();
 void myAction14();
+void myAction15();
+void myAction16();
 
 void myAction20();
 void myAction21();
@@ -32,6 +34,8 @@ bool myCondition11();
 bool myCondition12();
 bool myCondition13();
 bool myCondition14();
+bool myCondition15();
+bool myCondition16();
 
 bool myCondition20();
 bool myCondition21();
