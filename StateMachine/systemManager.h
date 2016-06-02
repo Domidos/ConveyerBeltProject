@@ -51,6 +51,7 @@ public:
 	bool condition22();
 	bool condition23();
 	bool condition24();
+	bool condition25();
 	
 	bool condition30();
 	

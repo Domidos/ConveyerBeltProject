@@ -186,6 +186,10 @@ bool myCondition24(){
 	return mySystemManager->conditionTrue();
 }
 
+bool myCondition25(){
+	return mySystemManager->condition25();
+}
+
 bool myCondition30(){
 	return mySystemManager->conditionTrue();
 }

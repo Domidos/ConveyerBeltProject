@@ -18,6 +18,7 @@ char clean[200];
 unsigned int initialSpeed = 200;
 bool onOff = false;
 int arrayCount=0;
+int transferCount = 0;
 int motorProfileArray[160];
 
 StateMachine * myStateMachine;
@@ -35,33 +36,38 @@ SystemManager :: SystemManager() {
 	// MAXDIA = 9, MAXLINES = 66
 	// Should these be exceeded, please correct!
 
-	tab[0][0] = new TableEntry ("idleState","chainIdle","setCommandChain",0,myAction00,myCondition01); //condition02 ist immer true!
-	tab[0][1] = new TableEntry ("idleState","localIdle","setCommandLocal",0,myAction01,myCondition02);
-	tab[0][2] = new TableEntry ("chainIdle","localIdle","toLocalIdle",0,myAction02,myCondition03);
-	tab[0][3] = new TableEntry ("localIdle","chainIdle","toChainIdle",0,myAction03,myCondition04);
+	tab[0][0] = new TableEntry ("idleState",      "chainIdle",       "setCommandChain", 0, myAction00,myCondition01); //condition02 ist immer true!
+	tab[0][1] = new TableEntry ("idleState",      "localIdle",       "setCommandLocal", 0, myAction01,myCondition02);
+	tab[0][2] = new TableEntry ("chainIdle",      "localIdle",       "toLocalIdle",     0, myAction02,myCondition03);
+	tab[0][3] = new TableEntry ("localIdle",      "chainIdle",       "toChainIdle",     0, myAction03,myCondition04);
 
-	tab[1][0] = new TableEntry ("localIdle","localIdle","setSpeed++",0,myAction10,myCondition10); //Geschwindigkeit erhöhen
-	tab[1][1] = new TableEntry ("localIdle","localIdle","setSpeed--",0,myAction11,myCondition11); //Geschwindigkeit herabsetzen
-	tab[1][2] = new TableEntry ("localIdle","localIdle","directionRight",0,myAction12,myCondition12); //Richtung rechts wählen
-	tab[1][3] = new TableEntry ("localIdle","localIdle","directionLeft",0,myAction13,myCondition13); //Richtung links wählen
-	tab[1][4] = new TableEntry ("localIdle","move","startProfile",0,myAction14,myCondition14);	// Profil abfahren
-	tab[1][5] = new TableEntry ("move","move","ProfileTimer",50,myAction15,myCondition15); //Inkrement hochzählen
-	tab[1][6] = new TableEntry ("move","localIdle","profileFinished",0,myAction16,myCondition16); //Inkrement hochzählen
+	tab[1][0] = new TableEntry ("localIdle",      "localIdle",       "setSpeed++",      0, myAction10,myCondition10); //Geschwindigkeit erhöhen
+	tab[1][1] = new TableEntry ("localIdle",      "localIdle",       "setSpeed--",      0, myAction11,myCondition11); //Geschwindigkeit herabsetzen
+	tab[1][2] = new TableEntry ("localIdle",      "localIdle",       "directionRight",  0, myAction12,myCondition12); //Richtung rechts wählen
+	tab[1][3] = new TableEntry ("localIdle",      "localIdle",       "directionLeft",   0, myAction13,myCondition13); //Richtung links wählen
+	tab[1][4] = new TableEntry ("localIdle",      "move",            "startProfile",    0, myAction14,myCondition14);	// Profil abfahren
+	tab[1][5] = new TableEntry ("move",           "move",            "ProfileTimer",   50, myAction15,myCondition15); //Inkrement hochzählen
+	tab[1][6] = new TableEntry ("move",           "localIdle",       "profileFinished", 0, myAction16,myCondition16); //Inkrement hochzählen
 	
 	// getStatus(Request) und send(Wait) muss noch in jede Action implementiert werden!
 	// subcase in Programmcode nicht möglich.
-	tab[2][0] = new TableEntry ("chainIdle","slowMovement","getStatus",0,myAction20,myCondition20); //start in Funktion getStatus implementieren
-	tab[2][1] = new TableEntry ("slowMovement","movingProfile","Timer0",1000,myAction21,myCondition21); //send und movingProfile in stop() implementieren
-	tab[2][2] = new TableEntry ("movingProfile","packageDelivery","Timer0",8000,myAction22,myCondition22); //stop in Funktion stop implementieren
-	tab[2][3] = new TableEntry ("packageDelivery","slowMovement","start",0,myAction23,myCondition23);
-	tab[2][4] = new TableEntry ("MotorProfile","MotorProfile","ProfileTimer",50,myAction15,myCondition15);
-	tab[2][5] = new TableEntry ("slowMovement","chainIdle","getStatus",0,myAction24,myCondition24); //stop und busy=false noch implementieren
+	tab[2][0] = new TableEntry ("chainIdle",      "slowMovement",    "getStatus",       0, myAction20,myCondition20); //start in Funktion getStatus implementieren
+	tab[2][1] = new TableEntry ("slowMovement",   "slowMovement",    "ChainModeTimer", 50, myAction16,myCondition25);
+	tab[2][2] = new TableEntry ("slowMovement",   "movingProfile",   "send(Release)",   0, myAction21,myCondition21); //send und movingProfile in stop() implementieren
+	tab[2][3] = new TableEntry ("movingProfile",  "movingProfile",   "ChainModeTimer", 50, myAction15,myCondition15); //Inkrement hochzählen
+//hier weiter machen*******************
+	tab[2][4] = new TableEntry ("movingProfile",  "packageDelivery", "profileFinished", 0, myAction22,myCondition22); //stop in Funktion stop implementieren
+//*************************************
+	tab[2][5] = new TableEntry ("packageDelivery","slowMovement",    "start",           0, myAction23,myCondition23);
+	tab[2][6] = new TableEntry ("MotorProfile",   "MotorProfile",    "ProfileTimer",   50, myAction15,myCondition15);
+	tab[2][7] = new TableEntry ("slowMovement",   "chainIdle",       "getStatus",       0, myAction24,myCondition24); //stop und busy=false noch implementieren
 	
-	tab[3][0] = new TableEntry ("StateK","StateK","Timer1",100,myAction30,myCondition30);
+	tab[3][0] = new TableEntry ("StateK",         "StateK",          "Timer1",        100, myAction30,myCondition30);
 
 	// Initialize timer names for all diagrams
 	// Timer names are always Timer followed by the diagram number
 	timerNames[1] = "ProfileTimer";
+	timerNames[2] = "ChainModeTimer";
 	timerNames[3] = "Timer1";
 	
 	
@@ -69,7 +75,7 @@ SystemManager :: SystemManager() {
 	// Initialize line numbers for all diagrams
 	lines[0] = 4;
 	lines[1] = 7;
-	lines[2] = 6;
+	lines[2] = 8;
 	lines[3] = 1;
 
 	// Initialize first state for all diagrams
@@ -117,7 +123,7 @@ SystemManager :: SystemManager() {
 	m = 0;
 	direction = true;
 	
-	//Initialoutput**********************************************************************************
+//Initialoutput**********************************************************************************
 	
 	
 	sprintf(textOutput,"Speed is ([B]-inc; [C]-dec):                       %i		     ", initialSpeed);
@@ -138,7 +144,7 @@ SystemManager :: SystemManager() {
 	sprintf(textOutput,"State of profile movement:										 ");
 	writeToDisplay (4, 0, textOutput);
 
-	//************************************************************************************************
+//************************************************************************************************
 	
 	return;
 }
@@ -158,7 +164,7 @@ void SystemManager :: action00() {                                              
 	sprintf(textOutput,"actual state (to [5]-localIdle):                   chainIdle     ");
 	writeToDisplay (3, 0, textOutput );
 	
-	return;
+return;
 	
 }
 
@@ -182,7 +188,7 @@ void SystemManager :: action02(){													//Taste 5
 	sprintf(textOutput,"actual state (to [4]-chainIdle):                   localIdle     ");
 	writeToDisplay (3, 0, textOutput );
 	
-	return;
+return;
 }
 
 // Mehode um von localMode in chainMode zu springen
@@ -193,7 +199,7 @@ void SystemManager :: action03(){													//Taste 4
 	sprintf(textOutput,"actual state (to [5]-localIdle):                   chainIdle     ");
 	writeToDisplay (3, 0, textOutput );
 		
-		return;
+return;
 }
 
 
@@ -216,7 +222,7 @@ void SystemManager ::action10(){												//Taste B
 
 	printf("current value of speed is: %d", value);
 	
-	return;
+return;
 }
 
 // Methode um Geschwindikeit um 1(100rpm) zu verkleinern
@@ -251,18 +257,7 @@ void SystemManager :: action13(){													//Taste F
 	direction = false;
 	sprintf(textOutput,"Direction is ([E]-right;[F]-left):                 left          ");
 	writeToDisplay (1, 0, textOutput );
-	
-	
-	/*
-	
-	char tempKey = myKeyboard->getPressedKey();
-			tempKey = getKey();
-			if (tempKey == '4'){
-				direction = false;
-				writeToDisplay (2, 0, "direction = false (links)");
-			}
 			
-	*/		
 }
 
 // Methode um Profil in local Mode abzufahren
@@ -306,9 +301,9 @@ void SystemManager :: action14(){														//Taste A
 	        }
 	    }
 	     
-	    for(unsigned i=0; i<160;i++){
+	   /* for(unsigned i=0; i<160;i++){
 	        printf("%i wertetabelle\n\r",motorProfileArray[i]);
-	    }
+	    }*/
 	     
 	    motorOn();
 	 
@@ -331,44 +326,68 @@ void SystemManager :: action15(){
 		    
 		 
 		    printf(" event sent for starting\n\r");
-		    
-		
-	
+		    			
     return;
 }
 
 void SystemManager :: action16(){ 
 	
 }
+
+
 // Funktionen für drittes Use-Case-Diagramm
-void SystemManager :: action20(){
-	myStateMachine->sendEvent("getStatus");
-	//myKeyboard->getPressedKey();
+void SystemManager :: action20(){													//Taste 0
+	writeAnalog(0,2200);
+	motorOn();
 	return;
 }
 
 void SystemManager :: action21(){
-	myStateMachine->sendEvent("send(Release)");
-	//myKeyboard->getPressedKey();
+	printf(" start motor profile\n\r"); 
+	    //start motor; sendReady
+	    motorOff();
+	    //sendrelease to the left neighbour
+	    if(arrayCount==0){
+	        int zielwert = 500; //0 fastetst 2047 almost 0
+	        int step = (2047-zielwert)/19;
+	        for(unsigned i=0; i<20;i++){
+	            motorProfileArray[i]=2047-(step*i);
+	        }
+	        for(unsigned i=20; i<140;i++){
+	            motorProfileArray[i]=zielwert;
+	        }
+	        for(unsigned i=140; i<160;i++){
+	            motorProfileArray[i]=zielwert+(step*(-140+i));
+	        }
+	    }
+	   
+	    for(unsigned i=0; i<160;i++){
+	        printf("%i wertetabelle\n\r",motorProfileArray[i]);
+	    }
+	    writeToDisplay (8,20, "stop motor, start motor profile");
+	    //start motor with ;
+	    writeAnalog(0,motorProfileArray[arrayCount]);
+	    motorOn();
+	    
 	return;
 }
 
 void SystemManager :: action22(){
 	myStateMachine->sendEvent("send(Request)");
-	//myKeyboard->getPressedKey();
+
 	return;
 }
 
 
 void SystemManager :: action23(){
 	myStateMachine->sendEvent("start");
-	//myKeyboard->getPressedKey();
+
 	return;
 }
 
 void SystemManager :: action24(){
 	myStateMachine->sendEvent("getStatus");
-	//myKeyboard->getPressedKey();
+
 	return;
 }
 
@@ -435,40 +454,12 @@ void SystemManager :: action30(){
 		//printf(" idle State -> Transition01 -> local Mode\n\r");
 		myStateMachine->sendEvent("directionLeft");
 		
+	
+	case '0':
+		myStateMachine->sendEvent("getStatus");
+	
 		break;
 		}
-	
-	
-
-	
-	
-	/*
-	if (key == 'A') {
-		
-		Test*****************************************************************************************
-		writeAnalog (0, 600); 												//Motor konfigurieren
-		motorOn();															//Motor starten
-		writeToDisplay (0, 0, "Start wurde gedrueckt (Stop mit Taste B)");
-		writeToDisplay (20, 0, "                                                              ");
-		printf ("Taste A gedrückt\n");
-		*********************************************************************************************
-		
-		myStateMachine->sendEvent("");
-	
-	}
-	*/
-	/*
-	else if (key == 'B'){
-		
-		Test*****************************************************************************************
-		motorOff();	//Motor stoppen
-		printf ("Taste B gedrückt\n");
-		writeToDisplay (0, 0, "                                                               ");
-		writeToDisplay (20, 0, "Stop wurde gedrueckt (Start mit Taste A)");
-		*********************************************************************************************
-		
-	}
-	*/
 	
 	return;
 }
@@ -495,6 +486,22 @@ bool SystemManager :: condition15(){
         return FALSE;
     }
     
+         
+}
+
+bool SystemManager :: condition25(){
+    transferCount++;
+    printf(" transferCount: %i \n\r", transferCount);   
+    if (transferCount < 20) { 
+        return TRUE;
+    }
+    else {
+        printf("1 second reached\n\r"); 
+        transferCount=0;
+        //motorOff();
+        myStateMachine->sendEvent("send(Release)");
+        return FALSE;
+    }
          
 }
 
