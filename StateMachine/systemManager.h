@@ -9,6 +9,10 @@
 #include "diaTimer.h"
 #include "stateTable.h"
 */
+extern bool localMode;
+extern bool newRequest;
+
+
 
 class SystemManager {
 public:
@@ -33,6 +37,8 @@ public:
 	void action30();
 	
 	bool conditionTrue();
+	bool conditionTrue1();
+	bool conditionTrue2();
 	bool condition00();
 	bool condition01();
 	bool condition02();
@@ -52,6 +58,7 @@ public:
 	bool condition23();
 	bool condition24();
 	bool condition25();
+	bool condition26();
 	
 	bool condition30();
 	

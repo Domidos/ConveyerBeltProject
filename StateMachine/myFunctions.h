@@ -43,6 +43,7 @@ bool myCondition22();
 bool myCondition23();
 bool myCondition24();
 bool myCondition25();
+bool myCondition26();
 
 bool myCondition30();
 

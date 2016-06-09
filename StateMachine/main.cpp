@@ -139,23 +139,23 @@ bool myCondition04(){
 }
 
 bool myCondition10(){
-	return mySystemManager->conditionTrue();
+	return mySystemManager->conditionTrue1();
 }
 
 bool myCondition11(){
-	return mySystemManager->condition11();
+	return mySystemManager->conditionTrue1();
 }
 
 bool myCondition12(){
-	return mySystemManager->conditionTrue();
+	return mySystemManager->conditionTrue1();
 }
 
 bool myCondition13(){
-	return mySystemManager->conditionTrue();
+	return mySystemManager->conditionTrue1();
 }
 
 bool myCondition14(){
-	return mySystemManager->conditionTrue();
+	return mySystemManager->conditionTrue1();
 }
 
 bool myCondition15(){
@@ -163,31 +163,35 @@ bool myCondition15(){
 }
 
 bool myCondition16(){
-	return mySystemManager->conditionTrue();
+	return mySystemManager->conditionTrue1();
 }
 
 bool myCondition20(){
-	return mySystemManager->conditionTrue();
+	return mySystemManager->conditionTrue2();
 }
 
 bool myCondition21(){
-	return mySystemManager->conditionTrue();
+	return mySystemManager->conditionTrue2();
 }
 
 bool myCondition22(){
-	return mySystemManager->conditionTrue();
+	return mySystemManager->conditionTrue2();
 }
 
 bool myCondition23(){
-	return mySystemManager->conditionTrue();
+	return mySystemManager->conditionTrue2();
 }
 
 bool myCondition24(){
-	return mySystemManager->conditionTrue();
+	return mySystemManager->conditionTrue2();
 }
 
 bool myCondition25(){
 	return mySystemManager->condition25();
+}
+
+bool myCondition26(){
+	return mySystemManager->condition26();
 }
 
 bool myCondition30(){

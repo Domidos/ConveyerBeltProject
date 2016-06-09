@@ -46,6 +46,12 @@ static void _STD__cxa_finalize()
 }
 
 
+void _STI___13_TCPClient_cpp_7f75c8d8();
+
+void _STI___13_TCPServer_cpp_7f75c8d8();
+
+void _STI___16_TelnetServer_cpp_7f75c8d8();
+
 void _STI___12_diaTimer_cpp_7f75c8d8();
 
 void _STI___8_main_cpp_7f75c8d8();
@@ -60,6 +66,9 @@ extern void (*_ctors[])();
 void (*_ctors[])() =
     {
     _STI__15_ctors,
+    _STI___13_TCPClient_cpp_7f75c8d8,
+    _STI___13_TCPServer_cpp_7f75c8d8,
+    _STI___16_TelnetServer_cpp_7f75c8d8,
     _STI___12_diaTimer_cpp_7f75c8d8,
     _STI___8_main_cpp_7f75c8d8,
     _STI___16_stateMachine_cpp_7f75c8d8,

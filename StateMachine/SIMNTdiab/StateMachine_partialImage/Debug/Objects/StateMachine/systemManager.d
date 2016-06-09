@@ -114,6 +114,24 @@ StateMachine_partialImage/Debug/Objects/StateMachine/systemManager.o: \
   C:/_HP_2Sem/StateMachine/stateTable.h \
   C:/_HP_2Sem/StateMachine/keyboard.h \
   C:/_HP_2Sem/StateMachine/myFunctions.h \
+  C:/_HP_2Sem/StateMachine/TCPServer.h \
+  C:/_HP_2Sem/StateMachine/TCPClient.h \
+  C:/_HP_2Sem/StateMachine/TelnetServer.h \
+  C:/Windriver/vxworks-6.9/target/h/sysLib.h \
+  C:/Windriver/vxworks-6.9/target/h/bootLib.h \
+  C:/Windriver/vxworks-6.9/target/h/ttyLib.h \
+  C:/Windriver/vxworks-6.9/target/h/sioLib.h \
+  C:/Windriver/vxworks-6.9/target/h/sioLibCommon.h \
+  C:/Windriver/vxworks-6.9/target/h/drv/timer/timerDev.h \
+  C:/Windriver/vxworks-6.9/target/h/ioLib.h \
+  C:/Windriver/vxworks-6.9/target/h/wrn/coreip/net/uio.h \
+  C:/Windriver/vxworks-6.9/target/h/wrn/coreip/sys/cdefs.h \
+  C:/Windriver/vxworks-6.9/target/h/wrn/coreip/netVersion.h \
+  C:/Windriver/vxworks-6.9/target/h/fcntl.h \
+  C:/Windriver/vxworks-6.9/target/h/sys/fcntlcom.h \
+  C:/Windriver/vxworks-6.9/target/h/unistd.h \
+  C:/Windriver/vxworks-6.9/target/h/dllLib.h \
+  C:/Windriver/vxworks-6.9/target/h/sys/resource.h \
   C:/_HP_2Sem/StateMachine/hwFunc.h
 
 C:/Windriver/diab/5.9.1.0/include/diab/lpragma.h:
@@ -343,6 +361,42 @@ C:/_HP_2Sem/StateMachine/stateTable.h:
 C:/_HP_2Sem/StateMachine/keyboard.h:
 
 C:/_HP_2Sem/StateMachine/myFunctions.h:
+
+C:/_HP_2Sem/StateMachine/TCPServer.h:
+
+C:/_HP_2Sem/StateMachine/TCPClient.h:
+
+C:/_HP_2Sem/StateMachine/TelnetServer.h:
+
+C:/Windriver/vxworks-6.9/target/h/sysLib.h:
+
+C:/Windriver/vxworks-6.9/target/h/bootLib.h:
+
+C:/Windriver/vxworks-6.9/target/h/ttyLib.h:
+
+C:/Windriver/vxworks-6.9/target/h/sioLib.h:
+
+C:/Windriver/vxworks-6.9/target/h/sioLibCommon.h:
+
+C:/Windriver/vxworks-6.9/target/h/drv/timer/timerDev.h:
+
+C:/Windriver/vxworks-6.9/target/h/ioLib.h:
+
+C:/Windriver/vxworks-6.9/target/h/wrn/coreip/net/uio.h:
+
+C:/Windriver/vxworks-6.9/target/h/wrn/coreip/sys/cdefs.h:
+
+C:/Windriver/vxworks-6.9/target/h/wrn/coreip/netVersion.h:
+
+C:/Windriver/vxworks-6.9/target/h/fcntl.h:
+
+C:/Windriver/vxworks-6.9/target/h/sys/fcntlcom.h:
+
+C:/Windriver/vxworks-6.9/target/h/unistd.h:
+
+C:/Windriver/vxworks-6.9/target/h/dllLib.h:
+
+C:/Windriver/vxworks-6.9/target/h/sys/resource.h:
 
 C:/_HP_2Sem/StateMachine/hwFunc.h:
 

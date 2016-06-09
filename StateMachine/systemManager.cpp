@@ -4,6 +4,11 @@
 #include "stateMachine.h"
 #include "keyboard.h"
 #include "myFunctions.h"
+#include "TCPServer.h"
+#include "TCPClient.h"
+#include "TelnetServer.h"
+#include <sysLib.h>
+#include <ioLib.h>
 
 
 
@@ -20,14 +25,17 @@ bool onOff = false;
 int arrayCount=0;
 int transferCount = 0;
 int motorProfileArray[160];
+bool newRequest = false;
+bool localMode=false;
 
 StateMachine * myStateMachine;
 Keyboard * myKeyboard;
-/*
-TCP_Server * myTPCServer;
-Telnet_Server * myTelnetServer;
-TCP_Client * myTCPClient;
-*/
+
+//TCPServer * myTPCServer;
+TelnetServer * myTelnetServer;
+//TCPClient * myTCPClient;
+
+
 
 
 SystemManager :: SystemManager() {
@@ -51,16 +59,14 @@ SystemManager :: SystemManager() {
 	
 	// getStatus(Request) und send(Wait) muss noch in jede Action implementiert werden!
 	// subcase in Programmcode nicht möglich.
-	tab[2][0] = new TableEntry ("chainIdle",      "slowMovement",    "getStatus",       0, myAction20,myCondition20); //start in Funktion getStatus implementieren
-	tab[2][1] = new TableEntry ("slowMovement",   "slowMovement",    "ChainModeTimer", 50, myAction16,myCondition25);
-	tab[2][2] = new TableEntry ("slowMovement",   "movingProfile",   "send(Release)",   0, myAction21,myCondition21); //send und movingProfile in stop() implementieren
-	tab[2][3] = new TableEntry ("movingProfile",  "movingProfile",   "ChainModeTimer", 50, myAction15,myCondition15); //Inkrement hochzählen
-//hier weiter machen*******************
-	tab[2][4] = new TableEntry ("movingProfile",  "packageDelivery", "profileFinished", 0, myAction22,myCondition22); //stop in Funktion stop implementieren
-//*************************************
-	tab[2][5] = new TableEntry ("packageDelivery","slowMovement",    "start",           0, myAction23,myCondition23);
-	tab[2][6] = new TableEntry ("MotorProfile",   "MotorProfile",    "ProfileTimer",   50, myAction15,myCondition15);
-	tab[2][7] = new TableEntry ("slowMovement",   "chainIdle",       "getStatus",       0, myAction24,myCondition24); //stop und busy=false noch implementieren
+	tab[2][0] = new TableEntry ("chainIdle",      	"slowMovementLeft",	"getStatus",       	0, myAction20,myCondition20); //start in Funktion getStatus implementieren
+	tab[2][1] = new TableEntry ("slowMovementLeft", "slowMovementLeft",	"ChainModeTimer", 	50,myAction16,myCondition25); //action16 ist "noAction"
+	tab[2][2] = new TableEntry ("slowMovementLeft", "movingProfile",   	"send(Release)",  	0, myAction21,myCondition21); //send und movingProfile in stop() implementieren
+	tab[2][3] = new TableEntry ("movingProfile",  	"movingProfile",   	"ChainModeTimer", 	50,myAction15,myCondition15); //Inkrement hochzählen
+	tab[2][4] = new TableEntry ("movingProfile",  	"packageDelivery", 	"profileFinished", 	0, myAction22,myCondition22); //stop in Funktion stop implementieren
+	tab[2][5] = new TableEntry ("packageDelivery",	"slowMovementRight","start",		    0, myAction23,myCondition23);
+	tab[2][6] = new TableEntry ("slowMovementRight","slowMovementRight","ChainModeTimer",  	50,myAction16,myCondition26);
+	tab[2][7] = new TableEntry ("slowMovementRight","chainIdle",    	"transferFinished", 0, myAction24,myCondition24); //stop und busy=false noch implementieren
 	
 	tab[3][0] = new TableEntry ("StateK",         "StateK",          "Timer1",        100, myAction30,myCondition30);
 
@@ -94,22 +100,22 @@ SystemManager :: SystemManager() {
 	myStateMachine = new StateMachine;
 	
 	// Create instance of TCP Server
-	/*
-	myTCPServer = new TCP_Server;
-	myTCPServer->init();
-	*/
+	
+	//myTPCServer = new TCPServer;
+	//myTPCServer->init();
 	
 	// Create instance of Telnet Server
-	/*
-	myTelnetServer = new Telnet_Server;
+	
+	myTelnetServer = new TelnetServer;
 	myTelnetServer->init();
-	*/
+
 	
 	// Create instance of TCP Client
-	/*
-	myTCPClient = new TCP_Client;
-	myTCPClient->init();
-	*/
+	
+	
+	//myTCPClient = new TCPClient;
+	//myTCPClient->init();
+	
 
 	// Start timer for each diagram which needs one in the first state!
 	// In my case these are diagram 0 and 2
@@ -158,18 +164,22 @@ SystemManager :: ~SystemManager() {
 //action00 -> Methode von idle in chain oder local mode
 void SystemManager :: action00() {                                               //Taste 1
 	
+	m=2;
+	direction = true;
 			
 	printf(" idle State -> Transition00 -> chainIdle\n\r");
 				
 	sprintf(textOutput,"actual state (to [5]-localIdle):                   chainIdle     ");
 	writeToDisplay (3, 0, textOutput );
+	sprintf(textOutput,"Direction is ([E]-right;[F]-left):                 right         ");
+	writeToDisplay (1, 0, textOutput );
 	
 return;
 	
 }
 
 void SystemManager :: action01() {												//Taste 2
-	
+	m=1;
 	printf(" idleState -> Transition00 -> localIdle\n\r");
 		
 	sprintf(textOutput,"actual state (to [4]-chainIdle):                   localIdle     ");
@@ -182,7 +192,7 @@ return;
 // Methode um von chainMode in localMode zu springen
 void SystemManager :: action02(){													//Taste 5
 
-	
+	m=1;
 	printf(" chain Mode -> Transition02 -> local Mode\n\r"); 
 		
 	sprintf(textOutput,"actual state (to [4]-chainIdle):                   localIdle     ");
@@ -193,12 +203,14 @@ return;
 
 // Mehode um von localMode in chainMode zu springen
 void SystemManager :: action03(){													//Taste 4
-
+	m=2;
+	direction = true;
 	printf(" local Mode -> Transition03 -> chain Mode\n\r"); 
 			
 	sprintf(textOutput,"actual state (to [5]-localIdle):                   chainIdle     ");
 	writeToDisplay (3, 0, textOutput );
-		
+	sprintf(textOutput,"Direction is ([E]-right;[F]-left):                 right         ");
+	writeToDisplay (1, 0, textOutput );	
 return;
 }
 
@@ -242,8 +254,7 @@ void SystemManager :: action11(){															//Taste C
 
 // Methode um Richtung nach rechts einzustellen
 void SystemManager :: action12(){													//Taste E
-	
-	
+		
 	direction = true;
 	sprintf(textOutput,"Direction is ([E]-right;[F]-left):                 right         ");
 	writeToDisplay (1, 0, textOutput );
@@ -252,8 +263,7 @@ void SystemManager :: action12(){													//Taste E
 
 // Methode um Richtung nach links einzustellen
 void SystemManager :: action13(){													//Taste F
-	
-	
+		
 	direction = false;
 	sprintf(textOutput,"Direction is ([E]-right;[F]-left):                 left          ");
 	writeToDisplay (1, 0, textOutput );
@@ -317,7 +327,6 @@ void SystemManager :: action14(){														//Taste A
 
 void SystemManager :: action15(){ 
 	
-	//printf("balabalaaaa");
     
 	printf(" local Profile activated\n\r");
 		 
@@ -361,10 +370,10 @@ void SystemManager :: action21(){
 	        }
 	    }
 	   
-	    for(unsigned i=0; i<160;i++){
+/*	    for(unsigned i=0; i<160;i++){
 	        printf("%i wertetabelle\n\r",motorProfileArray[i]);
 	    }
-	    writeToDisplay (8,20, "stop motor, start motor profile");
+*/	    writeToDisplay (8,20, "stop motor, start motor profile");
 	    //start motor with ;
 	    writeAnalog(0,motorProfileArray[arrayCount]);
 	    motorOn();
@@ -373,21 +382,29 @@ void SystemManager :: action21(){
 }
 
 void SystemManager :: action22(){
-	myStateMachine->sendEvent("send(Request)");
-
+//	myStateMachine->sendEvent("profileFinished");
+	printf("request Right\n\r"); 
+//	myTCPClient->sendMsg("REQUEST");
+	motorOff();
+	writeToDisplay (8,20, "stop motor, request right");
 	return;
 }
 
 
 void SystemManager :: action23(){
-	myStateMachine->sendEvent("start");
-
+	printf(" Transition to TransfertoRight because of Key 8 pressed\n\r"); 
+	//start motor; sendReady
+	writeToDisplay (8,20, "Received Ready, start transfer");
+	//myTCPServer->sendMsg("starting transfer\n");
+	writeAnalog(0,2200);
+	motorOn();
 	return;
 }
 
 void SystemManager :: action24(){
-	myStateMachine->sendEvent("getStatus");
-
+	printf("stop motor, ready for next packet\n\r"); 
+	motorOff();
+	writeToDisplay (8,20, "motor stopped, new packet?");
 	return;
 }
 
@@ -404,6 +421,7 @@ void SystemManager :: action30(){
 	case '1':
 		
 		//printf(" idle State -> Transition00 -> chain Mode\n\r");
+		
 		myStateMachine->sendEvent("setCommandChain");
 		
 		break;
@@ -434,13 +452,13 @@ void SystemManager :: action30(){
 		
 	case 'B':
 		//printf(" idle State -> Transition01 -> local Mode\n\r");
-		myStateMachine->sendEvent("setSpeed++");
+		myStateMachine->sendEvent("setSpeed--");
 		
 		break;
 		
 	case 'C':
 		//printf(" idle State -> Transition01 -> local Mode\n\r");
-		myStateMachine->sendEvent("setSpeed--");
+		myStateMachine->sendEvent("setSpeed++");
 		
 		break;
 		
@@ -453,10 +471,14 @@ void SystemManager :: action30(){
 	case 'F':
 		//printf(" idle State -> Transition01 -> local Mode\n\r");
 		myStateMachine->sendEvent("directionLeft");
-		
+		break;	
 	
 	case '0':
 		myStateMachine->sendEvent("getStatus");
+		break;
+		
+	case '8':
+		myStateMachine->sendEvent("start");	
 	
 		break;
 		}
@@ -474,7 +496,7 @@ bool SystemManager :: condition15(){
     //printf(" arrayCount: %i \n\r", arrayCount);   
     if (arrayCount < 160) { 
     	printf(" Profile not finished %i \n\r", arrayCount);
-    	myStateMachine->sendEvent("startProfile");
+//    	myStateMachine->sendEvent("startProfile");****************************************************************************************************************
         return TRUE;
         
     }
@@ -505,11 +527,37 @@ bool SystemManager :: condition25(){
          
 }
 
+bool SystemManager :: condition26(){
+    transferCount++;
+    printf(" transferCount: %i \n\r", transferCount);   
+    if (transferCount < 20) { 
+        return TRUE;
+    }
+    else {
+        printf("1 second reached\n\r"); 
+        transferCount=0;
+        //motorOff();
+        myStateMachine->sendEvent("transferFinished");
+        return FALSE;
+    }
+         
+}
+
 
 bool SystemManager :: conditionTrue(){
 	return TRUE;
 }
 
+bool SystemManager :: conditionTrue1(){
+	if(m==1) return TRUE;
+	else return FALSE;
+}
+
+bool SystemManager :: conditionTrue2(){
+	if(m==2) return TRUE;
+	else return FALSE;
+}
+/*
 bool SystemManager :: condition00(){
 	if (n < 5) {
 		return TRUE;
@@ -533,4 +581,4 @@ bool SystemManager :: condition12(){
 	if (m >= 4) return TRUE;
 	else return FALSE;
 }
-
+*/
