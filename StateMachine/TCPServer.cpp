@@ -160,7 +160,7 @@ VOID tcpServerWorkTask(
 	int nRead; /* number of bytes read */
 	static char replyMsg[] = "Server received your message";
 	/* read client request, display message */
-	static char welcomeMsg[] = "Server opened on port 5555 :) ";
+	static char welcomeMsg[] = "Server opened on port 5555 ";
 	if ((write(sFdServer, welcomeMsg, strlen(welcomeMsg))) == ERROR) {
 		//error
 	}

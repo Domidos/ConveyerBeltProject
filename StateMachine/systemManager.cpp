@@ -31,9 +31,9 @@ bool localMode=false;
 StateMachine * myStateMachine;
 Keyboard * myKeyboard;
 
-//TCPServer * myTPCServer;
+TCPServer * myTPCServer;
 TelnetServer * myTelnetServer;
-//TCPClient * myTCPClient;
+TCPClient * myTCPClient;
 
 
 
@@ -101,8 +101,10 @@ SystemManager :: SystemManager() {
 	
 	// Create instance of TCP Server
 	
-	//myTPCServer = new TCPServer;
-	//myTPCServer->init();
+	myTPCServer = new TCPServer;
+	myTPCServer->init();
+	
+	
 	
 	// Create instance of Telnet Server
 	
@@ -113,7 +115,7 @@ SystemManager :: SystemManager() {
 	// Create instance of TCP Client
 	
 	
-	//myTCPClient = new TCPClient;
+	myTCPClient = new TCPClient;
 	//myTCPClient->init();
 	
 

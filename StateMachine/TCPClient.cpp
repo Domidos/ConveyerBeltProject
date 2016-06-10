@@ -110,7 +110,7 @@ STATUS tcpClient
 	 int mlen; /* length of message */
 	 int nRead;
 	 /* create client's socket */
-	 printf("Hello Baby2!\n\r");
+	 printf("Hello!\n\r");
 	 printf("adresse:%s", ipAddress );
 	 if ((sFdClient = socket (AF_INET, SOCK_STREAM, 0)) == ERROR)
 	 {
@@ -127,7 +127,7 @@ STATUS tcpClient
 	 printf("adresse:%s", ipAddress );
 	 if (((serverAddr.sin_addr.s_addr = inet_addr (ipAddress)) == ERROR) && ((serverAddr.sin_addr.s_addr = hostGetByName (ipAddress)) == ERROR))
 		 {
-		 perror ("unknown server name LECK MICH FETT");
+		 perror ("unknown server name");
 		 close (sFdClient);
 		 return (ERROR);
 		 }
