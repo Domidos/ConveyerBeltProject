@@ -25,9 +25,9 @@ class TCPServer{
 	~TCPServer();
 	void init();
 	void sendMsg(char *msg);
-	void decrementRequestCount();
+
 	
-	//private:
+
 };
 
 

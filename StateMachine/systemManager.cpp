@@ -26,12 +26,12 @@ int arrayCount=0;
 int transferCount = 0;
 int motorProfileArray[160];
 bool newRequest = false;
-bool localMode=false;
+bool localMode=true;
 
 StateMachine * myStateMachine;
 Keyboard * myKeyboard;
 
-TCPServer * myTPCServer;
+TCPServer * myTCPServer;
 TelnetServer * myTelnetServer;
 TCPClient * myTCPClient;
 
@@ -44,18 +44,18 @@ SystemManager :: SystemManager() {
 	// MAXDIA = 9, MAXLINES = 66
 	// Should these be exceeded, please correct!
 
-	tab[0][0] = new TableEntry ("idleState",      "chainIdle",       "setCommandChain", 0, myAction00,myCondition01); //condition02 ist immer true!
-	tab[0][1] = new TableEntry ("idleState",      "localIdle",       "setCommandLocal", 0, myAction01,myCondition02);
-	tab[0][2] = new TableEntry ("chainIdle",      "localIdle",       "toLocalIdle",     0, myAction02,myCondition03);
-	tab[0][3] = new TableEntry ("localIdle",      "chainIdle",       "toChainIdle",     0, myAction03,myCondition04);
+	tab[0][0] = new TableEntry ("idleState",        "chainIdle",        "setCommandChain", 0, myAction00,myCondition01); //condition02 ist immer true!
+	tab[0][1] = new TableEntry ("idleState",        "localIdle",        "setCommandLocal", 0, myAction01,myCondition02);
+	tab[0][2] = new TableEntry ("chainIdle",        "localIdle",        "toLocalIdle",     0, myAction02,myCondition03);
+	tab[0][3] = new TableEntry ("localIdle",        "chainIdle",        "toChainIdle",     0, myAction03,myCondition04);
 
-	tab[1][0] = new TableEntry ("localIdle",      "localIdle",       "setSpeed++",      0, myAction10,myCondition10); //Geschwindigkeit erhöhen
-	tab[1][1] = new TableEntry ("localIdle",      "localIdle",       "setSpeed--",      0, myAction11,myCondition11); //Geschwindigkeit herabsetzen
-	tab[1][2] = new TableEntry ("localIdle",      "localIdle",       "directionRight",  0, myAction12,myCondition12); //Richtung rechts wählen
-	tab[1][3] = new TableEntry ("localIdle",      "localIdle",       "directionLeft",   0, myAction13,myCondition13); //Richtung links wählen
-	tab[1][4] = new TableEntry ("localIdle",      "move",            "startProfile",    0, myAction14,myCondition14);	// Profil abfahren
-	tab[1][5] = new TableEntry ("move",           "move",            "ProfileTimer",   50, myAction15,myCondition15); //Inkrement hochzählen
-	tab[1][6] = new TableEntry ("move",           "localIdle",       "profileFinished", 0, myAction16,myCondition16); //Inkrement hochzählen
+	tab[1][0] = new TableEntry ("localIdle",        "localIdle",        "setSpeed++",      0, myAction10,myCondition10); //Geschwindigkeit erhöhen
+	tab[1][1] = new TableEntry ("localIdle",        "localIdle",        "setSpeed--",      0, myAction11,myCondition11); //Geschwindigkeit herabsetzen
+	tab[1][2] = new TableEntry ("localIdle",        "localIdle",        "directionRight",  0, myAction12,myCondition12); //Richtung rechts wählen
+	tab[1][3] = new TableEntry ("localIdle",        "localIdle",        "directionLeft",   0, myAction13,myCondition13); //Richtung links wählen
+	tab[1][4] = new TableEntry ("localIdle",        "move",             "startProfile",    0, myAction14,myCondition14);	// Profil abfahren
+	tab[1][5] = new TableEntry ("move",             "move",             "ProfileTimer",   50, myAction15,myCondition15); //Inkrement hochzählen
+	tab[1][6] = new TableEntry ("move",             "localIdle",        "profileFinished", 0, myAction16,myCondition16); //Inkrement hochzählen
 	
 	// getStatus(Request) und send(Wait) muss noch in jede Action implementiert werden!
 	// subcase in Programmcode nicht möglich.
@@ -68,7 +68,7 @@ SystemManager :: SystemManager() {
 	tab[2][6] = new TableEntry ("slowMovementRight","slowMovementRight","ChainModeTimer",  	50,myAction16,myCondition26);
 	tab[2][7] = new TableEntry ("slowMovementRight","chainIdle",    	"transferFinished", 0, myAction24,myCondition24); //stop und busy=false noch implementieren
 	
-	tab[3][0] = new TableEntry ("StateK",         "StateK",          "Timer1",        100, myAction30,myCondition30);
+	tab[3][0] = new TableEntry ("StateK",           "StateK",           "Timer1",          100, myAction30,myCondition30);
 
 	// Initialize timer names for all diagrams
 	// Timer names are always Timer followed by the diagram number
@@ -101,8 +101,8 @@ SystemManager :: SystemManager() {
 	
 	// Create instance of TCP Server
 	
-	myTPCServer = new TCPServer;
-	myTPCServer->init();
+	myTCPServer = new TCPServer;
+	myTCPServer->init();
 	
 	
 	
@@ -116,7 +116,7 @@ SystemManager :: SystemManager() {
 	
 	
 	myTCPClient = new TCPClient;
-	//myTCPClient->init();
+	myTCPClient->init("91.0.0.113");
 	
 
 	// Start timer for each diagram which needs one in the first state!
@@ -165,9 +165,10 @@ SystemManager :: ~SystemManager() {
 
 //action00 -> Methode von idle in chain oder local mode
 void SystemManager :: action00() {                                               //Taste 1
-	
+
 	m=2;
 	direction = true;
+	localMode=false;
 			
 	printf(" idle State -> Transition00 -> chainIdle\n\r");
 				
@@ -195,6 +196,8 @@ return;
 void SystemManager :: action02(){													//Taste 5
 
 	m=1;
+	localMode=true;
+	
 	printf(" chain Mode -> Transition02 -> local Mode\n\r"); 
 		
 	sprintf(textOutput,"actual state (to [4]-chainIdle):                   localIdle     ");
@@ -205,8 +208,11 @@ return;
 
 // Mehode um von localMode in chainMode zu springen
 void SystemManager :: action03(){													//Taste 4
+	
 	m=2;
 	direction = true;
+	localMode=false;
+	
 	printf(" local Mode -> Transition03 -> chain Mode\n\r"); 
 			
 	sprintf(textOutput,"actual state (to [5]-localIdle):                   chainIdle     ");
@@ -348,6 +354,8 @@ void SystemManager :: action16(){
 
 // Funktionen für drittes Use-Case-Diagramm
 void SystemManager :: action20(){													//Taste 0
+	//myTCPClient->sendMsg("getStatus");
+	myTCPServer->sendMsg("READY");
 	writeAnalog(0,2200);
 	motorOn();
 	return;
@@ -357,6 +365,8 @@ void SystemManager :: action21(){
 	printf(" start motor profile\n\r"); 
 	    //start motor; sendReady
 	    motorOff();
+	    //TCPServer Befehl
+	    myTCPServer->sendMsg("RELEASE");
 	    //sendrelease to the left neighbour
 	    if(arrayCount==0){
 	        int zielwert = 500; //0 fastetst 2047 almost 0
@@ -375,7 +385,14 @@ void SystemManager :: action21(){
 /*	    for(unsigned i=0; i<160;i++){
 	        printf("%i wertetabelle\n\r",motorProfileArray[i]);
 	    }
-*/	    writeToDisplay (8,20, "stop motor, start motor profile");
+	    
+	    	    
+*/	  
+	    //writeToDisplay (8,20, "stop motor, start motor profile");
+
+		sprintf(textOutput,"State of profile movement:			  stop motor, start motor profile  ");
+		writeToDisplay (4, 0, textOutput);
+
 	    //start motor with ;
 	    writeAnalog(0,motorProfileArray[arrayCount]);
 	    motorOn();
@@ -386,27 +403,38 @@ void SystemManager :: action21(){
 void SystemManager :: action22(){
 //	myStateMachine->sendEvent("profileFinished");
 	printf("request Right\n\r"); 
-//	myTCPClient->sendMsg("REQUEST");
+	myTCPClient->sendMsg("REQUEST");
 	motorOff();
-	writeToDisplay (8,20, "stop motor, request right");
+	
+	sprintf(textOutput,"State of profile movement:			  stop motor, request right  ");
+	writeToDisplay (4, 0, textOutput);
+	
+	//writeToDisplay (8,20, "stop motor, request right");
 	return;
 }
 
 
 void SystemManager :: action23(){
 	printf(" Transition to TransfertoRight because of Key 8 pressed\n\r"); 
-	//start motor; sendReady
-	writeToDisplay (8,20, "Received Ready, start transfer");
-	//myTCPServer->sendMsg("starting transfer\n");
+	//myTCPClient->sendMsg("READY");
+
+	sprintf(textOutput,"State of profile movement:			  Received Ready, start transfer  ");
+	writeToDisplay (4, 0, textOutput);
+	
+	//writeToDisplay (8,20, "Received Ready, start transfer");
 	writeAnalog(0,2200);
 	motorOn();
 	return;
 }
 
 void SystemManager :: action24(){
-	printf("stop motor, ready for next packet\n\r"); 
+	printf("motor stopped, new packet?\n\r");
+	myTCPClient->sendMsg("RELEASE");
 	motorOff();
-	writeToDisplay (8,20, "motor stopped, new packet?");
+	sprintf(textOutput,"State of profile movement:			  motor stopped, new packet?      ");
+	writeToDisplay (4, 0, textOutput);
+	
+	
 	return;
 }
 

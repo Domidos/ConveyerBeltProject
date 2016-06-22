@@ -63,7 +63,7 @@ void TCPClient::init(char ip[40]){
 	//spawn TCP Server
 	taskSpawn("tcpClient", 152, 0, 0x10000,(FUNCPTR) tcpClient, (int)ipAddress, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	printf("TCP_Client :: init() server address: %s\n\r",ipAddress);
-	printf("Hello Baby!\n\r");
+	printf("Halloo!\n\r");
 	return;
 }
 
@@ -71,7 +71,6 @@ void TCPClient :: sendMsg(char *msg){
 	tcpClientSendMsg(msg);
 	return;
 }
-
 
 
 /* function declarations */
@@ -110,7 +109,7 @@ STATUS tcpClient
 	 int mlen; /* length of message */
 	 int nRead;
 	 /* create client's socket */
-	 printf("Hello!\n\r");
+	 printf("Hallooo!\n\r");
 	 printf("adresse:%s", ipAddress );
 	 if ((sFdClient = socket (AF_INET, SOCK_STREAM, 0)) == ERROR)
 	 {
@@ -161,7 +160,7 @@ STATUS tcpClient
 	 return (ERROR);
 	 }
 	 if (myRequest.reply) // if expecting reply, read and display it */ 
-	 static char msg[]= "VERBINDUNG VORHANDEN";
+	 static char msg[]= "Vorhandene Verbindung";
 	 write(sFdClient, msg, strlen(msg));
 	 while ((nRead = fioRdString(sFdClient,  (char *) &replyBuf, sizeof(replyBuf))) > 0) {
 	 	//if (read (sFdClient, replyBuf, REPLY_MSG_SIZE) < 0)
@@ -175,16 +174,16 @@ STATUS tcpClient
 	 		
 	 		if(strcmp(replyBuf,"RELEASE\r")==0)
 	 		{
-	 			printf("TCP-Client; receiveRelease; %d\r\n",sFdClient);
-	 			myStateMachine->sendEvent("receiveRelease");
+	 			printf("TCP-Client; transferFinished; %d\r\n",sFdClient);
+	 			myStateMachine->sendEvent("transferFinished");
 	 		}
 	 		else if(strcmp(replyBuf,"WAIT\r")==0){
 	 			printf("TCP-Client: Wait; %d\r\n",sFdClient);
 	 			//myStateMachine->sendEvent("receiveWait");
 	 		}
 	 		else if (strcmp(replyBuf,"READY\r")==0){
-	 			printf("TCP-Client: Ready; %d\r\n",sFdClient);
-	 			myStateMachine->sendEvent("receiveReady");
+	 			printf("TCP-Client: start; %d\r\n",sFdClient);
+	 			myStateMachine->sendEvent("start");
 	 		}
 	 	//}
 	 	//printf ("MESSAGE FROM SERVER:\n%s\n", replyBuf);

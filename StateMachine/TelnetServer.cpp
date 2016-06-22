@@ -21,10 +21,8 @@
 #include "TCPClient.h"
 
 
-extern int glTemp, glPot;
-float modTemp, modPot;
-StateMachine * myStateMachine; 	//??
-STATUS telnetServer(void);	//??
+StateMachine * myStateMachine; 	
+STATUS telnetServer(void);	
 //int sFd;
 //int newFd;
 

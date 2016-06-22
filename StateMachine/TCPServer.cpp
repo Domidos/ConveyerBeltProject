@@ -22,15 +22,12 @@
 
 
 
-extern int glTemp, glPot;
-float modTemp, modPot;
-int requestCount=0;
+
 
 TCPClient * myTCPClient;
-StateMachine * myStateMachine; 	//??
-STATUS tcpServer(void);	//??
+StateMachine * myStateMachine; 
+STATUS tcpServer(void);	
 void tcpServerSendMsg(char * msg);
-void decrementRequestCount(void);
 int sFdServer;
 int newFd; /* socket descriptor from accept */
 
@@ -51,13 +48,6 @@ void TCPServer::init( ){
 	return;
 }
 
-void TCPServer :: decrementRequestCount(){
-	if(requestCount>0){
-		requestCount--;
-	}else{
-		requestCount=0;
-	}
-}
 
 void TCPServer :: sendMsg(char *msg){
 	tcpServerSendMsg(msg);
@@ -160,7 +150,7 @@ VOID tcpServerWorkTask(
 	int nRead; /* number of bytes read */
 	static char replyMsg[] = "Server received your message";
 	/* read client request, display message */
-	static char welcomeMsg[] = "Server opened on port 5555 ";
+	static char welcomeMsg[] = "Dominik und Barthman heissen sie herzlich willkommen auf 5555";
 	if ((write(sFdServer, welcomeMsg, strlen(welcomeMsg))) == ERROR) {
 		//error
 	}
@@ -170,46 +160,22 @@ VOID tcpServerWorkTask(
 			
 			if(localMode==false){
 				
-				sprintf(stringBuffer, "REQ received\r");
+				sprintf(stringBuffer, "Request received\r");
 				
-				if(requestCount<2){
-					
-					if(requestCount>0){
-						sprintf(stringBuffer, "new REQ received\r");
-						newRequest=true;
-						printf("send WAIT because of allready working\n\r");
-						static char msg[]= "WAIT\r";
-						write(sFdServer, msg, strlen(msg));
-						printf("newRequest set to true");
-					}
-					else{
-						myStateMachine->sendEvent("requestReceived");
-						printf("request Received %i", requestCount);
-						/*printf("send READY because or REQUEST\n\r");
-						static char msg[]= "READY";
-						write(sFdServer, msg, strlen(msg));
-						printf("newRequest set to true");*/
-					}
-					requestCount++;
-					
-				}else{
-					
-					printf("max number of requests received");
-					sprintf(stringBuffer, "max Request Received \r");
-				}
-				
+				myStateMachine->sendEvent("getStatus");
+	
 			}else{
-				printf("in local mode");
-				sprintf(stringBuffer, "in LOCAL MODE \r");
+				printf("in wrong state, first change to chainIdle");
+				sprintf(stringBuffer, "in wrong state, first change to chainIdle \r");
 			}
 		}
 		
-		else if (request[0]=='T') {
+		else if (request[0]=='i' && request[1]=='p') {
 			for(int i=1;i<20;i++){
-				request[i-1]=request[i];
+				request[i-2]=request[i];
 			}
-			printf("key T pressed TCP SERVER %s",request);
-			sprintf(stringBuffer, "ip Address to send %s \r",request);
+			printf("TCP SERVER %s",request);
+			sprintf(stringBuffer, "type IP Address of the right neighbor %s \r",request);
 			
 			myTCPClient->init(request);
 		}
@@ -256,6 +222,7 @@ void tcpServerSendMsg(char * msg){
 		printf("send READY\n\r");
 		static char msg[]= "READY\r";
 		write(newFd, msg, strlen(msg));
+		myStateMachine->sendEvent("getStatus");
 
 	}
 	else{
