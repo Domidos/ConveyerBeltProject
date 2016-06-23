@@ -21,8 +21,12 @@
 #include"TCPClient.h"
 
 
+extern "C" {
+#include "hwFunc.h"
+}
 
 
+char textOutput[200];
 
 TCPClient * myTCPClient;
 StateMachine * myStateMachine; 
@@ -58,23 +62,8 @@ void TCPServer :: sendMsg(char *msg){
 
 /* function declarations */
 VOID tcpServerWorkTask(int sFdServer, char * address, u_short port);
-/****************************************************************************
- *
- * tcpServer - accept and process requests over a TCP socket
- *
- * This routine creates a TCP socket, and accepts connections over the socket
- * from clients. Each client connection is handled by spawning a separate
- * task to handle client requests.
- *
- * This routine may be invoked as follows:
- * -> sp tcpServer
- * task spawned: id = 0x3a6f1c, name = t1
- * value = 3829532 = 0x3a6f1c
- * -> MESSAGE FROM CLIENT (Internet Address 192.0.2.10, port 1027):
- * Hello out there
- *
- * RETURNS: Never, or ERROR if a resources could not be allocated.
- */
+
+
 STATUS tcpServer(void) {
 	struct sockaddr_in serverAddr; /* server's socket address */
 	struct sockaddr_in clientAddr; /* client's socket address */
@@ -127,16 +116,9 @@ STATUS tcpServer(void) {
 		}
 	}
 }
-/****************************************************************************
- *
- * tcpServerWorkTask - process client requests
- *
- * This routine reads from the server's socket, and processes client
- * requests. If the client requests a reply message, this routine
- * will send a reply to the client.
- *
- * RETURNS: N/A.
- */
+
+
+
 VOID tcpServerWorkTask(
 		int sFdServer, /* server's socket fd */
 		char * address, /* client's socket address */
@@ -156,10 +138,11 @@ VOID tcpServerWorkTask(
 	}
 	while ((nRead = fioRdString(sFdServer, (char *) &request, sizeof(request))) > 0) {
 
-		if (strcmp(request,"REQUEST\r")==0) {
+		if (strcmp(request,"Request\r")==0) {
 			
 			if(localMode==false){
 				
+								
 				sprintf(stringBuffer, "Request received\r");
 				
 				myStateMachine->sendEvent("getStatus");
@@ -175,7 +158,7 @@ VOID tcpServerWorkTask(
 				request[i-2]=request[i];
 			}
 			printf("TCP SERVER %s",request);
-			sprintf(stringBuffer, "type IP Address of the right neighbor %s \r",request);
+			sprintf(stringBuffer, "IP Address of the right neighbor is %s \r",request);
 			
 			myTCPClient->init(request);
 		}
@@ -189,13 +172,7 @@ VOID tcpServerWorkTask(
 		if(write(sFdServer, stringBuffer ,strlen(stringBuffer))==ERROR){
 			//error
 		}
-		/*	printf("MESSAGE FROM CLIENT (Internet Address %s, port %d):\n%s\n",
-		 address, port, request.message);
-		 free(address);  free malloc from inet_ntoa() 
-		 if (request.reply)
-		 if (write(sFdServer, replyMsg, sizeof(replyMsg)) == ERROR)
-		 perror("write");
-		 */
+
 	}
 	if (nRead == ERROR) /* error from read() */
 		perror("read");
@@ -207,18 +184,19 @@ void tcpServerSendMsg(char * msg){
 	char buffer[256];
 	sprintf(buffer,msg);
 	
-	if (strcmp(buffer,"RELEASE")==0) {
+	if (strcmp(buffer,"Release")==0) {
 		printf("send RELEASE\n\r");
 		static char msg[]= "RELEASE\r";
 		write(newFd, msg, strlen(msg));
+		
 	}
-	else if (strcmp(buffer,"WAIT")==0){
+	else if (strcmp(buffer,"Wait")==0){
 		printf("send WAIT\n\r");
 		static char msg[]= "WAIT";
 		write(newFd, msg, strlen(msg));
 
 	}
-	else if (strcmp(buffer,"READY")==0){
+	else if (strcmp(buffer,"Ready")==0){
 		printf("send READY\n\r");
 		static char msg[]= "READY\r";
 		write(newFd, msg, strlen(msg));

@@ -34,6 +34,7 @@ public:
 	void action22();
 	void action23();
 	void action24();
+	void action26();
 	void action30();
 	
 	bool conditionTrue();

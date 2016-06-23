@@ -180,7 +180,8 @@ StateMachine_partialImage/Debug/Objects/StateMachine/TCPServer.o: \
   C:/Windriver/vxworks-6.9/target/h/wdLib.h \
   C:/_HP_2Sem/StateMachine/stateTable.h \
   C:/_HP_2Sem/StateMachine/TCPServer.h \
-  C:/_HP_2Sem/StateMachine/TCPClient.h
+  C:/_HP_2Sem/StateMachine/TCPClient.h \
+  C:/_HP_2Sem/StateMachine/hwFunc.h
 
 C:/Windriver/diab/5.9.1.0/include/diab/lpragma.h:
 
@@ -543,4 +544,6 @@ C:/_HP_2Sem/StateMachine/stateTable.h:
 C:/_HP_2Sem/StateMachine/TCPServer.h:
 
 C:/_HP_2Sem/StateMachine/TCPClient.h:
+
+C:/_HP_2Sem/StateMachine/hwFunc.h:
 

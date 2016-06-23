@@ -113,6 +113,11 @@ void myAction24(){
 	return;
 }
 
+void myAction26(){
+	mySystemManager->action26();
+	return;
+}
+
 void myAction30(){
 	mySystemManager->action30();
 	return;

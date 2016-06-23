@@ -20,6 +20,7 @@ void myAction21();
 void myAction22();
 void myAction23();
 void myAction24();
+void myAction26();
 
 void myAction30();
 
