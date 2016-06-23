@@ -133,9 +133,9 @@ VOID tcpServerWorkTask(
 	static char replyMsg[] = "Server received your message";
 	/* read client request, display message */
 	static char welcomeMsg[] = "Dominik und Barthman heissen sie herzlich willkommen auf 5555";
-	if ((write(sFdServer, welcomeMsg, strlen(welcomeMsg))) == ERROR) {
+/*	if ((write(sFdServer, welcomeMsg, strlen(welcomeMsg))) == ERROR) {
 		//error
-	}
+	}*/
 	while ((nRead = fioRdString(sFdServer, (char *) &request, sizeof(request))) > 0) {
 
 		if (strcmp(request,"Request\r")==0) {
@@ -143,7 +143,7 @@ VOID tcpServerWorkTask(
 			if(localMode==false){
 				
 								
-				sprintf(stringBuffer, "Request received\r");
+				sprintf(stringBuffer, "Ready\r\n");
 				
 				myStateMachine->sendEvent("getStatus");
 	
@@ -153,9 +153,9 @@ VOID tcpServerWorkTask(
 			}
 		}
 		
-		else if (request[0]=='i' && request[1]=='p') {
+		else if (request[0]=='R' && request[1]=='i' && request[2]=='g' && request[3]=='h' && request[4]=='t' && request[5]==' '){
 			for(int i=1;i<20;i++){
-				request[i-2]=request[i];
+				request[i-6]=request[i];
 			}
 			printf("TCP SERVER %s",request);
 			sprintf(stringBuffer, "IP Address of the right neighbor is %s \r",request);
@@ -165,14 +165,14 @@ VOID tcpServerWorkTask(
 
 		else{
 			static char errorMsg[] = "falsche Eingabe\n\r";
-			write(sFdServer, errorMsg, strlen(errorMsg));
+//			write(sFdServer, errorMsg, strlen(errorMsg));
 			sprintf(stringBuffer, "");
 		}
 
-		if(write(sFdServer, stringBuffer ,strlen(stringBuffer))==ERROR){
+/*		if(write(sFdServer, stringBuffer ,strlen(stringBuffer))==ERROR){
 			//error
 		}
-
+*/
 	}
 	if (nRead == ERROR) /* error from read() */
 		perror("read");
@@ -185,20 +185,20 @@ void tcpServerSendMsg(char * msg){
 	sprintf(buffer,msg);
 	
 	if (strcmp(buffer,"Release")==0) {
-		printf("send RELEASE\n\r");
-		static char msg[]= "RELEASE\r";
+		printf("Sock: %i (Server) send RELEASE\n\r", newFd);
+		static char msg[]= "Release\r\n";
 		write(newFd, msg, strlen(msg));
 		
 	}
 	else if (strcmp(buffer,"Wait")==0){
-		printf("send WAIT\n\r");
-		static char msg[]= "WAIT";
+		printf("Sock: %i (Server) send WAIT\n\r",newFd);
+		static char msg[]= "Wait\r\n";
 		write(newFd, msg, strlen(msg));
 
 	}
 	else if (strcmp(buffer,"Ready")==0){
-		printf("send READY\n\r");
-		static char msg[]= "READY\r";
+		printf("Sock: %i (Server) send READY\n\r",newFd);
+		static char msg[]= "Ready\r\n";
 		write(newFd, msg, strlen(msg));
 		myStateMachine->sendEvent("getStatus");
 

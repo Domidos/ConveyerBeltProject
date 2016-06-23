@@ -104,7 +104,7 @@ STATUS tcpClient
 	 }
 	 
 	 static char msg[]= "Vorhandene Verbindung";
-	 write(sFdClient, msg, strlen(msg));
+//	 write(sFdClient, msg, strlen(msg));
 	 while ((nRead = fioRdString(sFdClient,  (char *) &replyBuf, sizeof(replyBuf))) > 0) {
 
 
@@ -136,24 +136,24 @@ STATUS tcpClientSendMsg(char * msg){
 	sprintf(buffer,msg);
 	
 	if (strcmp(buffer,"Release")==0) {
-		printf("release\n\r");
-		static char msg[]= "RELEASE\r";
+		printf("Sock: %i (Client) release\n\r",sFdClient);
+		static char msg[]= "Release\r\n";
 		write(sFdClient, msg, strlen(msg));
 	}
 	else if (strcmp(buffer,"Wait")==0){
-		printf("wait\n\r");
-		static char msg[]= "WAIT\r";
+		printf("Sock: %i (Client) wait\n\r",sFdClient);
+		static char msg[]= "Wait\r\n";
 		write(sFdClient, msg, strlen(msg));
 
 	}
 	else if (strcmp(buffer,"Ready")==0){
-		printf("ready\n\r");
-		static char msg[]= "READY";
+		printf("Sock: %i (Client) ready\n\r",sFdClient);
+		static char msg[]= "Ready\r\n";
 		write(sFdClient, msg, strlen(msg));
 	}
 	else if (strcmp(buffer,"Request")==0){
-		printf("request right (tcp)\n\r");
-		static char msg[]= "REQUEST\r";
+		printf("Sock: %i (Client) request right \n\r",sFdClient);
+		static char msg[]= "Request\r\n";
 		write(sFdClient, msg, strlen(msg));
 	}
 	

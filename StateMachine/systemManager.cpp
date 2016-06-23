@@ -152,6 +152,16 @@ SystemManager :: SystemManager() {
 	
 	sprintf(textOutput,"[A] Motorstart in localIdle");
 	writeToDisplay (24, 0, textOutput);
+	
+	
+	sprintf(textOutput,"Client Commands             Server Commands");
+	writeToDisplay (12, 0, textOutput);
+	sprintf(textOutput,"-------------------------------------------");
+	writeToDisplay (13, 0, textOutput);
+	sprintf(textOutput,"Right91.0.0.XXX                Ready");
+	writeToDisplay (14, 0, textOutput);
+	sprintf(textOutput,"Request                        Release");
+	writeToDisplay (15, 0, textOutput);
 
 //************************************************************************************************
 	
