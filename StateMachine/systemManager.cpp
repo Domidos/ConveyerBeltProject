@@ -11,26 +11,23 @@
 #include <ioLib.h>
 
 
-
 extern "C" {
 #include "hwFunc.h"
 }
+
 
 int n, m, value;
 bool direction;
 char textOutput[200];
 char clean[200];
 unsigned int initialSpeed = 200;
-bool onOff = false;
-int arrayCount=0;
-int transferCount = 0;
-int motorProfileArray[160];
-bool newRequest = false;
+int arrayPosition=0;
+int rampArrayPosition = 0;
+int valuesInArrayOfProfile[160];
 bool localMode=true;
 
 StateMachine * myStateMachine;
 Keyboard * myKeyboard;
-
 TCPServer * myTCPServer;
 TelnetServer * myTelnetServer;
 TCPClient * myTCPClient;
@@ -39,6 +36,8 @@ TCPClient * myTCPClient;
 
 
 SystemManager :: SystemManager() {
+	
+	
 	// Initialize table for all diagrams, event time in ms (POSIX)
 	// The maximum size of the table is defined in stateTable.h:
 	// MAXDIA = 9, MAXLINES = 66
@@ -158,7 +157,7 @@ SystemManager :: SystemManager() {
 	writeToDisplay (12, 0, textOutput);
 	sprintf(textOutput,"-------------------------------------------");
 	writeToDisplay (13, 0, textOutput);
-	sprintf(textOutput,"Right91.0.0.XXX                Ready");
+	sprintf(textOutput,"Right 91.0.0.XXX               Ready");
 	writeToDisplay (14, 0, textOutput);
 	sprintf(textOutput,"Request                        Release");
 	writeToDisplay (15, 0, textOutput);
@@ -299,33 +298,33 @@ void SystemManager :: action14(){														//Taste A
 	    //start motor; sendReady
 	    if (direction==true){
 	        motorOff();
-	        if(arrayCount==0){
+	        if(arrayPosition==0){
 	            int zielwert = 2100-(2100/2200.0*initialSpeed); 
 	            int step = (2100-zielwert)/19;
 	            for(unsigned int i=0; i<20;i++){
-	                motorProfileArray[i]=2100-(step*i);
+	                valuesInArrayOfProfile[i]=2100-(step*i);
 	            }
 	            for(unsigned int i=20; i<140;i++){
-	                motorProfileArray[i]=zielwert;
+	                valuesInArrayOfProfile[i]=zielwert;
 	            }
 	            for(unsigned int i=140; i<160;i++){
-	                motorProfileArray[i]=zielwert+(step*(-140+i));
+	                valuesInArrayOfProfile[i]=zielwert+(step*(-140+i));
 	            }
 	        }
 	    }
 	    else{
 	        motorOff();
-	        if(arrayCount==0){
+	        if(arrayPosition==0){
 	        	int zielwert = 2100+(2100/2200.0*initialSpeed); 
 	        	int step = (zielwert-2100)/19;
 	            for(unsigned int i=0; i<20;i++){
-	                motorProfileArray[i]=2100+(step*i);
+	                valuesInArrayOfProfile[i]=2100+(step*i);
 	            }
 	            for(unsigned int i=20; i<140;i++){
-	                motorProfileArray[i]=zielwert;
+	                valuesInArrayOfProfile[i]=zielwert;
 	            }
 	            for(unsigned int i=140; i<160;i++){
-	                motorProfileArray[i]=zielwert-(step*(-140+i));
+	                valuesInArrayOfProfile[i]=zielwert-(step*(-140+i));
 	            }
 	        }
 	    }
@@ -350,7 +349,7 @@ void SystemManager :: action15(){
 	printf(" local Profile activated\n\r");
 		 
 	
-		    writeAnalog(0,motorProfileArray[arrayCount]);
+		    writeAnalog(0,valuesInArrayOfProfile[arrayPosition]);
 		    
 		 
 		    printf(" event sent for starting\n\r");
@@ -382,17 +381,17 @@ void SystemManager :: action21(){
 	    //TCPServer Befehl
 	    myTCPServer->sendMsg("Release");
 	    //sendrelease to the left neighbour
-	    if(arrayCount==0){
+	    if(arrayPosition==0){
 	        int zielwert = 500; //0 fastetst 2047 almost 0
 	        int step = (2047-zielwert)/19;
 	        for(unsigned i=0; i<20;i++){
-	            motorProfileArray[i]=2047-(step*i);
+	            valuesInArrayOfProfile[i]=2047-(step*i);
 	        }
 	        for(unsigned i=20; i<140;i++){
-	            motorProfileArray[i]=zielwert;
+	            valuesInArrayOfProfile[i]=zielwert;
 	        }
 	        for(unsigned i=140; i<160;i++){
-	            motorProfileArray[i]=zielwert+(step*(-140+i));
+	            valuesInArrayOfProfile[i]=zielwert+(step*(-140+i));
 	        }
 	    }
 	   
@@ -408,7 +407,7 @@ void SystemManager :: action21(){
 		writeToDisplay (4, 0, textOutput);
 
 	    //start motor with ;
-	    writeAnalog(0,motorProfileArray[arrayCount]);
+	    writeAnalog(0,valuesInArrayOfProfile[arrayPosition]);
 	    motorOn();
 	    
 	return;
@@ -540,12 +539,12 @@ void SystemManager :: action30(){
 
 bool SystemManager :: condition15(){
 	
-    arrayCount++;
+    arrayPosition++;
     printf("in condition 15 ");
     //implement control for motorProfile which is feeded with table for values of the profile
    
-    if (arrayCount < 160) { 
-    	printf(" Profile not finished %i \n\r", arrayCount);
+    if (arrayPosition < 160) { 
+    	printf(" Profile not finished %i \n\r", arrayPosition);
 
         return TRUE;
         
@@ -553,7 +552,7 @@ bool SystemManager :: condition15(){
     else {
         printf(" Profile finished\n\r"); 
         myStateMachine->sendEvent("profileFinished");
-        arrayCount=0;
+        arrayPosition=0;
         motorOff();
         return FALSE;
     }
@@ -562,14 +561,14 @@ bool SystemManager :: condition15(){
 }
 
 bool SystemManager :: condition25(){
-    transferCount++;
-    printf(" transferCount: %i \n\r", transferCount);   
-    if (transferCount < 20) { 
+    rampArrayPosition++;
+    printf(" rampArrayPosition: %i \n\r", rampArrayPosition);   
+    if (rampArrayPosition < 20) { 
         return TRUE;
     }
     else {
         printf("1 second reached\n\r"); 
-        transferCount=0;
+        rampArrayPosition=0;
    
         myStateMachine->sendEvent("send(Release)");
         return FALSE;
@@ -578,14 +577,14 @@ bool SystemManager :: condition25(){
 }
 
 bool SystemManager :: condition26(){
-    transferCount++;
-    printf(" transferCount: %i \n\r", transferCount);   
-    if (transferCount < 20) { 
+    rampArrayPosition++;
+    printf(" rampArrayPosition: %i \n\r", rampArrayPosition);   
+    if (rampArrayPosition < 20) { 
         return TRUE;
     }
     else {
         printf("1 second reached\n\r"); 
-        transferCount=0;
+        rampArrayPosition=0;
     
         myStateMachine->sendEvent("transferFinished");
         return FALSE;

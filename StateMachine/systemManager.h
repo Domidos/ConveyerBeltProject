@@ -40,7 +40,6 @@ public:
 	bool conditionTrue();
 	bool conditionTrue1();
 	bool conditionTrue2();
-	bool condition00();
 	bool condition01();
 	bool condition02();
 	bool condition03();

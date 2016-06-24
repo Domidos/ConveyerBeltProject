@@ -177,6 +177,18 @@ StateMachine_partialImage/$(MODE_DIR)/% : LIBPATH =
 StateMachine_partialImage/$(MODE_DIR)/% : LIBS = 
 StateMachine_partialImage/$(MODE_DIR)/% : OBJ_DIR := StateMachine_partialImage/$(MODE_DIR)
 
+StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/Control_Files/Subsystem.o : $(PRJ_ROOT_DIR)/Control_Files/Subsystem.c $(FORCE_FILE_BUILD)
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -W:c++:.CPP -Xc-new -Xdialect-c89  -ei1518,4177,4223,4301,4550,5409,1606 -ei4193,4826,4381,4237,1573,4007,4082,4177,4223,4260,4550,5361,5828,2273,5387,5388 -ei1522,4092,4111,4152,4167,4171,4174,4186,4188,4191,4192,4223,4231,4236,4284,4375,4494,4513,5152,5457 -Xforce-declarations   -Xmake-dependency=0xd $(IDE_DEFINES) $(DEFINES) $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -o "$@" -c "$<"
+
+
+StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/Control_Files/ert_main.o : $(PRJ_ROOT_DIR)/Control_Files/ert_main.c $(FORCE_FILE_BUILD)
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -W:c++:.CPP -Xc-new -Xdialect-c89  -ei1518,4177,4223,4301,4550,5409,1606 -ei4193,4826,4381,4237,1573,4007,4082,4177,4223,4260,4550,5361,5828,2273,5387,5388 -ei1522,4092,4111,4152,4167,4171,4174,4186,4188,4191,4192,4223,4231,4236,4284,4375,4494,4513,5152,5457 -Xforce-declarations   -Xmake-dependency=0xd $(IDE_DEFINES) $(DEFINES) $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -o "$@" -c "$<"
+
+
+StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/Control_Files/text\ and\ mat\ files/Subsystem_data.o : $(PRJ_ROOT_DIR)/Control_Files/text\ and\ mat\ files/Subsystem_data.c $(FORCE_FILE_BUILD)
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -W:c++:.CPP -Xc-new -Xdialect-c89  -ei1518,4177,4223,4301,4550,5409,1606 -ei4193,4826,4381,4237,1573,4007,4082,4177,4223,4260,4550,5361,5828,2273,5387,5388 -ei1522,4092,4111,4152,4167,4171,4174,4186,4188,4191,4192,4223,4231,4236,4284,4375,4494,4513,5152,5457 -Xforce-declarations   -Xmake-dependency=0xd $(IDE_DEFINES) $(DEFINES) $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -o "$@" -c "$<"
+
+
 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TCPClient.o : $(PRJ_ROOT_DIR)/TCPClient.cpp $(FORCE_FILE_BUILD)
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -W:c++:.CPP -ei1518,4177,4223,4301,4550,5409,1606 -ei4193,4826,4381,4237,1573,4007,4082,4177,4223,4260,4550,5361,5828,2273,5387,5388 -ei1522,4092,4111,4152,4167,4171,4174,4186,4188,4191,4192,4223,4231,4236,4284,4375,4494,4513,5152,5457 -Xforce-declarations   -Xmake-dependency=0xd $(IDE_DEFINES) $(DEFINES) $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -o "$@" -c "$<"
 
@@ -229,7 +241,10 @@ StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/systemManager.o : $(P
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -W:c++:.CPP -ei1518,4177,4223,4301,4550,5409,1606 -ei4193,4826,4381,4237,1573,4007,4082,4177,4223,4260,4550,5361,5828,2273,5387,5388 -ei1522,4092,4111,4152,4167,4171,4174,4186,4188,4191,4192,4223,4231,4236,4284,4375,4494,4513,5152,5457 -Xforce-declarations   -Xmake-dependency=0xd $(IDE_DEFINES) $(DEFINES) $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -o "$@" -c "$<"
 
 
-OBJECTS_StateMachine_partialImage = StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TCPClient.o \
+OBJECTS_StateMachine_partialImage = StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/Control_Files/Subsystem.o \
+	 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/Control_Files/ert_main.o \
+	 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/Control_Files/text\ and\ mat\ files/Subsystem_data.o \
+	 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TCPClient.o \
 	 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TCPServer.o \
 	 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TelnetServer.o \
 	 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/diaTimer.o \
@@ -264,7 +279,8 @@ TARGET_JOBS_RULE?=echo "Update the makefile template via File > Import > Build S
 %_jobs : 
 	$(TRACE_FLAG)$(TARGET_JOBS_RULE)
 
-DEP_FILES := StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TCPClient.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TCPServer.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TelnetServer.d \
+DEP_FILES := StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/Control_Files/Subsystem.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/Control_Files/ert_main.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/Control_Files/text\ and\ mat\ files/Subsystem_data.d \
+	 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TCPClient.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TCPServer.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/TelnetServer.d \
 	 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/diaTimer.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/disp.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/hwFunc.d \
 	 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/kbd.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/keyboard.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/main.d \
 	 StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/setMyIP.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/stateMachine.d StateMachine_partialImage/$(MODE_DIR)/Objects/StateMachine/stateTable.d \

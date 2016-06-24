@@ -8,8 +8,12 @@
 #include "systemManager.h"
 #include "stateMachine.h"
 
+
 extern "C" {
 #include "hwFunc.h"
+}
+extern "C" {
+#include "Control_Files/ert_main.h"
 }
 
 SystemManager * mySystemManager;
@@ -23,6 +27,7 @@ int main (void) {
 	sysClkRateSet(200);
 	
 	initHardware(0);
+	initialiseController();
 	
 	// Set local IP address according to MAC table
 	setLocalIp();
@@ -123,9 +128,7 @@ void myAction30(){
 	return;
 }
 
-bool myCondition00(){
-	return mySystemManager->condition00();
-}
+
 
 bool myCondition01(){
 	return mySystemManager->conditionTrue();
